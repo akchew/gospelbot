@@ -1,7 +1,7 @@
 {
-  "name": "examples",
+  "name": "gospelbot",
   "version": "0.6.0",
-  "description": "Examples for the Bot Builder framework.",
+  "description": "A bot that tells the truth of Jesus's life and the Gospel.",
   "author": "Microsoft Corp.",
   "license": "MIT",
   "dependencies": {
