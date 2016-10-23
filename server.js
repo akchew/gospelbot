@@ -59,6 +59,13 @@ intents.matches("Gospel", [
 
 ]);
 
+intents.matches("Commands", [
+    function (session) {
+        session.beginDialog('/commands');
+    }
+
+]);
+
 intents.matches("None", [
     function (session) {
         session.beginDialog('/none');
@@ -124,6 +131,13 @@ bot.dialog('/gospel', [
     function (session, results) {
         session.userData.name = results.response;
         session.endDialog();
+    }
+]);
+
+bot.dialog('/commands', [
+    function (session) {
+        builder.Prompts.text(session, 'Here are the available commands: \n  What does the bible say about [topic]? \n  Let\'s play a game! \n  I need help');
+		session.endDialog();
     }
 ]);
 
