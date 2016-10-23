@@ -1,8 +1,22 @@
 var builder = require('botbuilder');
 var https = require("https");
 var nodeMailer = require("nodemailer");
+var restify = require("restify");
 
-var connector = new builder.ConsoleConnector().listen();
+var server = restify.createServer();
+server.listen(process.env.port || process.env.PORT || 3978, function () {
+   console.log('%s listening to %s', server.name, server.url);
+});
+
+
+var connector = new builder.ChatConnector({
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
+});
+server.post('/api', connector.listen());
+
+//var connector = new builder.ConsoleConnector().listen();
+
 var bot = new builder.UniversalBot(connector);
 var intents = new builder.IntentDialog();
 var model = "https://api.projectoxford.ai/luis/v1/application?id=9590dd96-5e61-4a7b-815d-920ef577b682&subscription-key=ec1a2ef489f74d4c98036c15d1918a09";
@@ -117,7 +131,7 @@ bot.dialog('/verse', [
     function (session) {
         https.get({
             host: 'api.biblia.com',
-            path: `/v1/bible/search/ASV.js?query=${session.userData.topic}&mode=verse&start=0&limit=3&key=497ed26b357db5d55be1a161d0417f2f`
+            path: `/v1/bible/search/LEB.js?query=${session.userData.topic}&mode=verse&start=0&limit=3&key=497ed26b357db5d55be1a161d0417f2f`
         }, function(response) {
             // Continuously update stream with data
             var body = '';
@@ -126,7 +140,6 @@ bot.dialog('/verse', [
             });
             response.on('end', function() {
                 var result = JSON.parse(body);
-                console.log(result);
                 session.send(result.results[0].title + " - " + result.results[0].preview);
             });
         });
