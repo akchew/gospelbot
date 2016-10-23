@@ -9,6 +9,8 @@ intents = intents.recognizer(new builder.LuisRecognizer(model));
 
 bot.dialog('/', intents);
 
+// NEW FEATURE
+
 //=============== intents =============
 intents.matches("Biblical Figure", [
     function (session) {
