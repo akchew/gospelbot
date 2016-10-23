@@ -12,6 +12,7 @@ var connector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 server.post('/api', connector.listen());
+
 //var connector = new builder.ConsoleConnector().listen();
 
 var bot = new builder.UniversalBot(connector);
