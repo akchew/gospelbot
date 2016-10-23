@@ -1,4 +1,5 @@
 var builder = require('botbuilder');
+var https = require("https");
 
 var connector = new builder.ConsoleConnector().listen();
 var bot = new builder.UniversalBot(connector);
@@ -17,7 +18,8 @@ intents.matches("Biblical Figure", [
 ]);
 
 intents.matches("Bible Verse", [
-    function (session) {
+    function (session, args) {
+        session.userData.topic = builder.EntityRecognizer.findEntity(args.entities, 'topic').entity;
         session.beginDialog('/verse');
     }
 
@@ -73,10 +75,22 @@ bot.dialog('/game', [
 
 bot.dialog('/verse', [
     function (session) {
-        builder.Prompts.text(session, 'Hi! What is your name?');
-    },
-    function (session, results) {
-        session.userData.name = results.response;
+        https.get({
+            host: 'api.biblia.com',
+            path: `/v1/bible/search/ASV.js?query=${session.userData.topic}&mode=verse&start=0&limit=3&key=497ed26b357db5d55be1a161d0417f2f`
+        }, function(response) {
+            // Continuously update stream with data
+            var body = '';
+            response.on('data', function(d) {
+                body += d;
+            });
+            response.on('end', function() {
+                var result = JSON.parse(body);
+                console.log(result);
+                session.send(result.results[0].title + " - " + result.results[0].preview);
+            });
+        });
+
         session.endDialog();
     }
 ]);
@@ -86,7 +100,7 @@ bot.dialog('/greet', [
         builder.Prompts.text(session, 'Hi! What is your name?');
     },
     function (session, results) {
-        session.userData.name = results.response;
+        session.send('Hello %s!', results.response);
         session.endDialog();
     }
 ]);
